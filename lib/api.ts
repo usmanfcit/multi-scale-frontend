@@ -77,15 +77,6 @@ export class ApiError extends Error {
   }
 }
 
-// Helper function to add ngrok bypass header for free tier
-function getNgrokHeaders(): HeadersInit {
-  return {
-    'ngrok-skip-browser-warning': 'true',
-    // This header bypasses the ngrok warning page on free tier
-    // Without it, ngrok returns HTML instead of JSON, causing "Unable to connect" errors
-  };
-}
-
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
     let errorMessage = `HTTP error! status: ${response.status}`;
@@ -129,9 +120,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
 export async function healthCheck(): Promise<HealthResponse> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/health`, {
-      headers: getNgrokHeaders(),
-    });
+    const response = await fetch(`${API_BASE_URL}/api/v1/health`);
     return handleResponse<HealthResponse>(response);
   } catch (error) {
     if (error instanceof TypeError && error.message.includes("fetch")) {
@@ -171,7 +160,6 @@ export async function searchProducts(
   try {
     const response = await fetch(`${API_BASE_URL}/api/v1/search`, {
       method: "POST",
-      headers: getNgrokHeaders(),
       body: formData,
     });
 
@@ -214,7 +202,6 @@ export async function upsertCatalogItem(
   try {
     const response = await fetch(`${API_BASE_URL}/api/v1/catalog/upsert`, {
       method: "POST",
-      headers: getNgrokHeaders(),
       body: formData,
     });
 
@@ -248,7 +235,6 @@ export async function detectObjects(
   try {
     const response = await fetch(`${API_BASE_URL}/api/v1/detect`, {
       method: "POST",
-      headers: getNgrokHeaders(),
       body: formData,
     });
 
@@ -279,7 +265,6 @@ export async function detectAndSegmentObjects(
   try {
     const response = await fetch(`${API_BASE_URL}/api/v1/detect-and-segment`, {
       method: "POST",
-      headers: getNgrokHeaders(),
       body: formData,
     });
 
@@ -300,3 +285,4 @@ export async function detectAndSegmentObjects(
     );
   }
 }
+
